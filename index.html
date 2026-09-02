@@ -87,13 +87,36 @@
             .print\:hidden, header, footer, section:not(#print-area), .no-print, #toast, #custom-confirm { display: none !important; }
             #print-area { display: block !important; }
             table td, table th { word-break: keep-all; padding: 6px !important; }
-            tr { page-break-inside: avoid; }
+            tr, .print-checklist, .print-qr-box, .print-extra { page-break-inside: avoid; }
         }
         .print-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
         .print-table th, .print-table td { border: 2px solid #111; vertical-align: top; }
         .col-date { width: 11%; text-align: center; }
         .col-desc { width: 75%; }
         .col-meal { width: 14%; text-align: center; }
+        #print-area .print-extra { display: flex; gap: 12px; margin-top: 12px; align-items: stretch; }
+        #print-area .print-checklist {
+            flex: 1; border: 1.5px solid #111; padding: 10px 12px; background: #fff;
+        }
+        #print-area .print-checklist h2 { font-size: 13px; font-weight: 800; margin: 0 0 8px 0; }
+        #print-area .print-checklist-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px;
+            font-size: 11px; font-weight: 600;
+        }
+        #print-area .print-check-item { display: flex; align-items: center; gap: 6px; line-height: 1.35; }
+        #print-area .print-check-box {
+            width: 12px; height: 12px; border: 1.5px solid #004098; border-radius: 2px; flex-shrink: 0;
+        }
+        #print-area .print-qr-box {
+            width: 42%; display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border: 1.5px solid #111; background: #f8fafc;
+        }
+        #print-area .print-qr-box img {
+            width: 88px; height: 88px; border: 1px solid #111; background: #fff; flex-shrink: 0;
+        }
+        #print-area .print-qr-box .qr-copy { font-size: 11px; line-height: 1.45; font-weight: 600; }
+        #print-area .print-qr-box .qr-copy strong { color: #004098; font-size: 12.5px; display: block; margin-bottom: 3px; }
+        #print-area .print-qr-box .qr-url { color: #475569; font-size: 9.5px; word-break: break-all; font-weight: 500; }
     </style>
 </head>
 <body class="antialiased pb-20 md:pb-0">
@@ -161,6 +184,29 @@
         <p class="text-[11px] text-gray-600 mt-3 text-right leading-relaxed">
             ※ 상기 일정은 학교의 요청 및 현지 사정에 따라 조율될 수 있습니다.
         </p>
+        <div class="print-extra">
+            <div class="print-checklist">
+                <h2>□ 출발 전 준비물</h2>
+                <div class="print-checklist-grid">
+                    <div class="print-check-item"><span class="print-check-box"></span>편한 운동화</div>
+                    <div class="print-check-item"><span class="print-check-box"></span>여벌 옷</div>
+                    <div class="print-check-item"><span class="print-check-box"></span>세면도구</div>
+                    <div class="print-check-item"><span class="print-check-box"></span>얇은 겉옷(가디건·바람막이)</div>
+                    <div class="print-check-item"><span class="print-check-box"></span>개인 상비약</div>
+                    <div class="print-check-item"><span class="print-check-box"></span>보조배터리</div>
+                    <div class="print-check-item"><span class="print-check-box"></span>우산</div>
+                    <div class="print-check-item"><span class="print-check-box"></span>약간의 용돈</div>
+                </div>
+            </div>
+            <div class="print-qr-box">
+                <img src="assets/images/guidebook-qr.png" alt="스마트 가이드북 QR코드" width="88" height="88">
+                <div class="qr-copy">
+                    <strong>스마트 가이드북</strong>
+                    QR을 스캔하면 실시간 날씨·동선·세부 일정을 휴대폰에서 확인할 수 있습니다.<br>
+                    <span class="qr-url">https://indadady.github.io/261028_Seoul/</span>
+                </div>
+            </div>
+        </div>
         <div class="mt-3 flex justify-between items-end print-contacts text-sm font-bold">
             <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHfgIX70O5k6Anuo0UgALIdaG9jSga9auHu3uyz0uEirylGPAJnjN_qQbvEGMUvPqUQf_g9FMNUHRxlDcUBf4vZ3Mpy4TnA9WxbmzWYK11gt2zuy_Irl4wctNFjcjLyPo0GPXV792o_J7L9guRMuDfeC1gy7USwywjYbECZgzcsHybuGRRAXAnO1eNmP8/s320/logo.png" style="height:20px;" alt="Tourmaker">
             <div>담당자 : 조혁 010-4249-4026 · T-safe24 안전망</div>
@@ -190,7 +236,6 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-1 shrink-0 ml-2">
-                    <button onclick="printSchedule()" class="hidden md:inline-flex items-center gap-1.5 bg-[#004098] text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-[#002d6b]"><i class="fa-solid fa-print"></i> 일정표 인쇄하기</button>
                     <button onclick="shareLink()" class="p-2 text-slate-500 hover:text-[#004098]" aria-label="공유"><i class="fa-solid fa-share-nodes text-xl"></i></button>
                 </div>
             </nav>
@@ -309,10 +354,13 @@
         <section id="schedule" class="py-16 bg-slate-50 border-t border-slate-100">
             <div class="container mx-auto px-4">
                 <div class="max-w-4xl mx-auto">
-                    <div class="text-center mb-10">
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-3">
                         <h2 class="text-2xl md:text-3xl font-black font-title">세부 일정표</h2>
-                        <p class="text-slate-500 text-sm mt-2">상기 상세 일정은 학교 요청 및 현지 사정에 의해 변동될 수 있습니다. · 안내 초안</p>
+                        <button onclick="printSchedule()" class="inline-flex items-center gap-1.5 bg-[#004098] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#002d6b] shadow-md">
+                            <i class="fa-solid fa-print"></i> 일정표 인쇄하기
+                        </button>
                     </div>
+                    <p class="text-center text-slate-500 text-sm mt-0 mb-10">상기 상세 일정은 학교 요청 및 현지 사정에 의해 변동될 수 있습니다. · 안내 초안</p>
 
                     <div class="bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden mb-8">
                         <div class="bg-gradient-to-r from-[#004098] to-sky-600 text-white px-6 py-5 flex items-center justify-between flex-wrap gap-3">
@@ -828,10 +876,18 @@
                 iconSize: [36, 36], iconAnchor: [18, 18], tooltipAnchor: [0, -18]
             });
         }
-        function travelerIcon(emoji, deg) {
+        function travelerIcon(emoji, bearing) {
+            const base = 90;
+            let rot = bearing - base;
+            rot = ((rot + 540) % 360) - 180;
+            let flip = 1;
+            if (rot > 90 || rot < -90) {
+                flip = -1;
+                rot += rot > 0 ? -180 : 180;
+            }
             return L.divIcon({
                 className: 'traveler-icon',
-                html: `<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:28px;line-height:1;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4));transform:rotate(${deg}deg);">${emoji}</div>`,
+                html: `<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:28px;line-height:1;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4));transform:rotate(${rot}deg) scaleX(${flip});">${emoji}</div>`,
                 iconSize: [44, 44], iconAnchor: [22, 22]
             });
         }
@@ -842,9 +898,6 @@
             const y = Math.sin(dLng) * Math.cos(lat2);
             const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
             return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
-        }
-        function headingAdjust(mode, bearing) {
-            return bearing - 90;
         }
         function clearTraveler() {
             if (travelerMarker && currentMap) {
@@ -930,8 +983,7 @@
                 clearTraveler();
                 const start = L.latLng(latlngs[0]);
                 const nxt = lookAhead(latlngs, 0.02);
-                const deg = headingAdjust(mode, bearingDeg(nxt.a, nxt.b));
-                travelerMarker = L.marker(start, { icon: travelerIcon('🚌', deg), zIndexOffset: 1200 }).addTo(currentMap);
+                travelerMarker = L.marker(start, { icon: travelerIcon('🚌', bearingDeg(nxt.a, nxt.b)), zIndexOffset: 1200 }).addTo(currentMap);
                 const t0 = performance.now();
                 function frame(now) {
                     if (token !== animToken) { clearTraveler(); resolve(); return; }
@@ -939,10 +991,9 @@
                     const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
                     const ll = latLngAlong(latlngs, eased);
                     const hd = lookAhead(latlngs, eased);
-                    const rot = headingAdjust(mode, bearingDeg(hd.a, hd.b));
                     if (travelerMarker) {
                         travelerMarker.setLatLng(ll);
-                        travelerMarker.setIcon(travelerIcon('🚌', rot));
+                        travelerMarker.setIcon(travelerIcon('🚌', bearingDeg(hd.a, hd.b)));
                     }
                     if (p < 1) requestAnimationFrame(frame);
                     else resolve();
