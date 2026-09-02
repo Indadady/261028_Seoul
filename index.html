@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JLH9GD9SVR"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JLH9GD9SVR');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>함백고등학교 서울 1박 2일 스마트 가이드북</title>
+    <meta name="description" content="함백고등학교 서울 1박 2일 스마트 가이드북 — 2026.10.28~10.29 · 전용버스 · 안내 초안">
+    <meta property="og:title" content="함백고등학교 서울 가이드북">
+    <meta property="og:description" content="2026.10.28~10.29 · 전용버스 · 1박 2일 일정 안내">
+    <meta property="og:image" content="https://indadady.github.io/261028_Seoul/assets/images/og-thumb.jpg">
+    <meta property="og:image:width" content="1920">
+    <meta property="og:image:height" content="1272">
+    <meta property="og:image:alt" content="한강에서 바라본 롯데월드타워 야경">
+    <meta name="theme-color" content="#004098">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <style>
+        :root { --tm: #004098; --tm-dark: #002d6b; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .font-title { font-family: 'Montserrat', 'Noto Sans KR', sans-serif; letter-spacing: -0.03em; }
+        .hero-bg {
+            background:
+                linear-gradient(180deg, rgba(10, 22, 36, 0.28) 0%, rgba(10, 22, 36, 0.55) 58%, rgba(10, 22, 36, 0.82) 100%),
+                url('assets/images/hero.jpg');
+            background-size: cover;
+            background-position: center 40%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        @media (max-width: 768px){ .hero-bg { background-attachment: scroll; } }
+        section { scroll-margin-top: 84px; }
+        #map { height: 520px; width: 100%; border-radius: 1rem; z-index: 10; }
+        .animate-fade-in-up { animation: fadeInUp 0.9s ease-out forwards; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .custom-icon div {
+            box-shadow: 0 12px 24px rgba(15,23,42,0.18);
+            border: 2.5px solid rgba(255,255,255,0.95);
+        }
+        .traveler-icon { background: none !important; border: none !important; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .schedule-thumb {
+            display: block;
+            width: 100%;
+            max-width: 11rem;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            border-radius: .9rem;
+            border: 1px solid #dbe3ea;
+            box-shadow: 0 8px 22px rgba(15,23,42,0.08);
+            flex-shrink: 0;
+        }
+        .schedule-media { display: flex; flex-direction: column; gap: .85rem; }
+        @media (min-width: 768px) {
+            .schedule-media { flex-direction: row; align-items: flex-start; gap: 1rem; }
+            .schedule-media .schedule-desc { flex: 1; min-width: 0; }
+        }
+        .weather-scroll-fade {
+            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+        }
+        input:checked + span { text-decoration: line-through; color: #94a3b8; transition: all 0.3s ease; }
+        @media screen { #print-area { display: none !important; } }
+        @media print {
+            @page { size: A4 portrait; margin: 10mm; }
+            body { background: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .print\:hidden, header, footer, section:not(#print-area), .no-print, #toast, #custom-confirm { display: none !important; }
+            #print-area { display: block !important; }
+            table td, table th { word-break: keep-all; padding: 6px !important; }
+            tr { page-break-inside: avoid; }
+        }
+        .print-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
+        .print-table th, .print-table td { border: 2px solid #111; vertical-align: top; }
+        .col-date { width: 11%; text-align: center; }
+        .col-desc { width: 75%; }
+        .col-meal { width: 14%; text-align: center; }
+    </style>
+</head>
+<body class="antialiased pb-20 md:pb-0">
+
+    <div id="print-area">
+        <div class="border-b-4 border-black pb-3 mb-3 text-center">
+            <h1 class="text-2xl font-black mb-0">함백고등학교 서울 수학여행 일정표</h1>
+            <p class="text-sm text-gray-600 font-bold tracking-widest uppercase italic">2026.10.28(수) ~ 10.29(목) · 1박 2일 · 안내 초안</p>
+        </div>
+        <div class="mb-3 flex justify-between text-sm font-bold px-1">
+            <span>■ 인원: 총 37명 (학생 31 + 인솔 6)</span>
+            <span>■ 숙소: 밀리토피아 호텔 바이 마린</span>
+        </div>
+        <table class="print-table">
+            <thead>
+                <tr class="bg-gray-200 text-center font-black h-10">
+                    <th class="col-date">일자</th>
+                    <th class="col-desc">상세 일정 및 동선</th>
+                    <th class="col-meal">식사</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="col-date font-black bg-gray-50 p-2 align-top"><span class="text-[13px]">1일차<br>10.28(수)</span></td>
+                    <td class="col-desc p-3 leading-relaxed">
+                        <ul class="space-y-1 font-medium" style="list-style:none;padding:0;">
+                            <li>■ 08:45 함백고등학교 출발 → 롯데월드몰 이동 (전용버스)</li>
+                            <li>■ 11:30 ~ 12:30 중식 · 숙성시대 (소고기불고기세트)</li>
+                            <li><span class="font-black" style="color:#004098;">■ 13:00 ~ 14:00 서울스카이 전망대</span></li>
+                            <li><span class="font-black" style="color:#004098;">■ 15:00 ~ 17:00 홍대 티켓투이스케이프 (방탈출)</span></li>
+                            <li>■ 17:45 ~ 19:00 석식 · 애슐리퀸즈 대학로점</li>
+                            <li><span class="font-black" style="color:#004098;">■ 19:30 ~ 22:15 뮤지컬 《빨래》 · NOL 유니플렉스 (165분)</span></li>
+                            <li>■ 22:30 ~ 밀리토피아 호텔 바이 마린 체크인 및 휴식</li>
+                        </ul>
+                    </td>
+                    <td class="col-meal font-bold align-middle p-2">
+                        <div class="flex flex-col justify-center gap-3 py-2">
+                            <div><span class="bg-gray-200 px-2 py-0.5 rounded text-[10px]">조식</span><br>-</div>
+                            <div><span class="bg-gray-200 px-2 py-0.5 rounded text-[10px]">중식</span><br>한식</div>
+                            <div><span class="bg-gray-200 px-2 py-0.5 rounded text-[10px]">석식</span><br>뷔페식</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-date font-black bg-gray-50 p-2 align-top"><span class="text-[13px]">2일차<br>10.29(목)</span></td>
+                    <td class="col-desc p-3 leading-relaxed">
+                        <ul class="space-y-1 font-medium" style="list-style:none;padding:0;">
+                            <li>■ 08:00 ~ 09:00 기상 · 호텔 조식 · 짐 정리 · 체크아웃</li>
+                            <li>■ 09:00 ~ 10:00 롯데월드 이동</li>
+                            <li><span class="font-black" style="color:#004098;">■ 10:00 ~ 15:00 롯데월드 어드벤처 (중식 자유식 · 원내 자유시간)</span></li>
+                            <li>■ 15:00 ~ 18:00 함백고등학교 이동 (전용버스)</li>
+                            <li>■ 18:00 학교 도착 및 귀가</li>
+                        </ul>
+                    </td>
+                    <td class="col-meal font-bold align-middle p-2">
+                        <div class="flex flex-col justify-center gap-3 py-2">
+                            <div><span class="bg-gray-200 px-2 py-0.5 rounded text-[10px]">조식</span><br>호텔식</div>
+                            <div><span class="bg-gray-200 px-2 py-0.5 rounded text-[10px]">중식</span><br>자유식</div>
+                            <div><span class="bg-gray-200 px-2 py-0.5 rounded text-[10px]">석식</span><br>-</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="text-[11px] text-gray-600 mt-3 text-right leading-relaxed">
+            ※ 상기 일정은 학교의 요청 및 현지 사정에 따라 조율될 수 있습니다.
+        </p>
+        <div class="mt-3 flex justify-between items-end print-contacts text-sm font-bold">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHfgIX70O5k6Anuo0UgALIdaG9jSga9auHu3uyz0uEirylGPAJnjN_qQbvEGMUvPqUQf_g9FMNUHRxlDcUBf4vZ3Mpy4TnA9WxbmzWYK11gt2zuy_Irl4wctNFjcjLyPo0GPXV792o_J7L9guRMuDfeC1gy7USwywjYbECZgzcsHybuGRRAXAnO1eNmP8/s320/logo.png" style="height:20px;" alt="Tourmaker">
+            <div>담당자 : 조혁 010-4249-4026</div>
+        </div>
+    </div>
+
+    <div class="print:hidden">
+        <header class="bg-white/95 backdrop-blur-md shadow-md sticky top-0 z-50">
+            <nav class="container mx-auto px-4 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-2 shrink-0">
+                    <a href="http://tourmaker.kr" target="_blank" rel="noopener">
+                        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHfgIX70O5k6Anuo0UgALIdaG9jSga9auHu3uyz0uEirylGPAJnjN_qQbvEGMUvPqUQf_g9FMNUHRxlDcUBf4vZ3Mpy4TnA9WxbmzWYK11gt2zuy_Irl4wctNFjcjLyPo0GPXV792o_J7L9guRMuDfeC1gy7USwywjYbECZgzcsHybuGRRAXAnO1eNmP8/s320/logo.png" alt="Tourmaker" class="h-6 md:h-7">
+                    </a>
+                    <span id="d-day-badge" class="hidden ml-1"></span>
+                </div>
+                <div class="flex-1 overflow-x-auto no-scrollbar ml-4 md:ml-6">
+                    <div class="flex items-center space-x-1 md:space-x-5 whitespace-nowrap pr-4">
+                        <a href="#home" class="px-3 py-2 text-sm font-bold text-slate-600 hover:text-[#004098] rounded-lg">홈</a>
+                        <a href="#highlights" class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#004098] rounded-lg">포인트</a>
+                        <a href="#flight" class="px-3 py-2 text-sm font-bold text-sky-700 hover:bg-sky-50 rounded-lg"><i class="fa-solid fa-bus mr-1"></i>버스</a>
+                        <a href="#map-section" class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#004098] rounded-lg">동선</a>
+                        <a href="#schedule" class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#004098] rounded-lg">일정</a>
+                        <a href="#hotel" class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#004098] rounded-lg">숙소</a>
+                        <a href="#smart-info" class="px-3 py-2 text-sm font-bold text-blue-700 hover:bg-blue-50 rounded-lg"><i class="fa-solid fa-cloud-sun mr-1"></i>날씨</a>
+                        <a href="#check" class="px-3 py-2 text-sm font-bold text-purple-700 hover:bg-purple-50 rounded-lg"><i class="fa-solid fa-clipboard-check mr-1"></i>준비물</a>
+                        <a href="#contact" class="px-3 py-2 text-sm font-bold text-red-700 hover:bg-red-50 rounded-lg"><i class="fa-solid fa-phone-volume mr-1"></i>연락망</a>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1 shrink-0 ml-2">
+                    <button onclick="printSchedule()" class="hidden md:inline-flex items-center gap-1.5 bg-[#004098] text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-[#002d6b]"><i class="fa-solid fa-print"></i> 일정표 인쇄하기</button>
+                    <button onclick="shareLink()" class="p-2 text-slate-500 hover:text-[#004098]" aria-label="공유"><i class="fa-solid fa-share-nodes text-xl"></i></button>
+                </div>
+            </nav>
+        </header>
+
+        <section id="home" class="hero-bg min-h-[74vh] flex items-center justify-center text-center px-4">
+            <div class="animate-fade-in-up text-white max-w-4xl">
+                <div class="inline-flex items-center gap-2.5 mb-7 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur border border-white/20 shadow-xl">
+                    <i class="fa-solid fa-school text-sky-200"></i>
+                    <span class="text-sm md:text-base font-bold tracking-tight">함백고등학교 · 서울 수학여행</span>
+                </div>
+                <h1 class="text-4xl md:text-6xl font-black mb-4 drop-shadow-2xl font-title leading-[1.06]">
+                    서울<br>
+                    <span class="text-sky-200">1박 2일</span>
+                </h1>
+                <p class="text-lg md:text-2xl text-sky-100 font-bold tracking-wide mb-8 drop-shadow-lg">
+                    "서울스카이 · 홍대 방탈출 · 뮤지컬 빨래 · 롯데월드"
+                </p>
+                <div>
+                    <p class="text-xl md:text-2xl text-white font-bold tracking-wide mb-2 opacity-90">2026.10.28(수) ~ 10.29(목)</p>
+                    <p class="text-sm md:text-base text-slate-200 font-medium tracking-widest uppercase opacity-80">총 37명 · 학생 31 + 인솔 6 · 전용버스</p>
+                    <p class="mt-4 inline-block bg-white/15 border border-white/30 text-white text-xs font-bold px-4 py-1.5 rounded-full">안내 초안 · 학교 요청 및 현지 사정에 따라 조율</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="highlights" class="py-16 bg-white relative -mt-10 rounded-t-[3rem] z-10 shadow-[0_-15px_40px_rgba(0,0,0,0.15)]">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <span class="text-[#004098] font-black tracking-[0.2em] text-xs uppercase">Trip Focus</span>
+                    <h2 class="text-2xl md:text-4xl font-bold text-slate-800 mt-2 font-title">이번 여행의 3가지 핵심</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                        <div class="w-16 h-16 bg-sky-100 rounded-2xl flex items-center justify-center mb-6 text-3xl">🌆</div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-3 font-title">서울스카이</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">롯데월드타워 전망대에서 서울 전경을 내려다보며, 잠실권 일정을 시작합니다.</p>
+                        <span class="inline-block bg-sky-700 text-white text-xs px-3 py-1 rounded-full font-bold">1일차 오후</span>
+                    </div>
+                    <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                        <div class="w-16 h-16 bg-violet-100 rounded-2xl flex items-center justify-center mb-6 text-3xl">🎭</div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-3 font-title">방탈출 · 뮤지컬</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">홍대 티켓투이스케이프와 대학로 NOL 유니플렉스 뮤지컬 《빨래》로 협력과 문화 감상을 잇습니다.</p>
+                        <span class="inline-block bg-violet-600 text-white text-xs px-3 py-1 rounded-full font-bold">1일차 저녁</span>
+                    </div>
+                    <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                        <div class="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center mb-6 text-3xl">🎢</div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-3 font-title">롯데월드</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">2일차 오전부터 오후까지 어드벤처에서 자유롭게 즐긴 뒤, 전용버스로 안전하게 귀교합니다.</p>
+                        <span class="inline-block bg-rose-600 text-white text-xs px-3 py-1 rounded-full font-bold">2일차</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="flight" class="py-16 bg-slate-50 border-t border-slate-100">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="text-center mb-10">
+                    <span class="text-sky-600 font-black tracking-widest text-xs uppercase">Charter Bus</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mt-2 font-title">전용버스 이동 안내</h2>
+                    <p class="text-slate-500 text-sm mt-2">정선 신동 · 함백고 ↔ 서울 잠실·홍대·대학로 · 성남 위례</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white rounded-2xl p-5 border border-slate-100">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">1일차 출발</p>
+                        <p class="text-3xl font-black text-slate-800">08:45</p>
+                        <p class="text-sm font-bold text-slate-500 mt-1">함백고등학교</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border border-slate-100">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">이동 수단</p>
+                        <p class="text-2xl font-black text-slate-800">전용버스</p>
+                        <p class="text-sm font-bold text-slate-500 mt-1">전 일정 동행</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border border-slate-100">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">2일차 도착</p>
+                        <p class="text-3xl font-black text-slate-800">18:00</p>
+                        <p class="text-sm font-bold text-slate-500 mt-1">함백고 도착 · 귀가</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-[2rem] border border-slate-100 p-6 md:p-8 space-y-4 text-sm text-slate-600 leading-relaxed">
+                    <div class="flex gap-3"><span class="font-black text-[#004098] w-16 shrink-0">안전</span><span>승하차 시 인원 파악, 좌석 안전벨트 착용, 집합 시간 엄수가 가장 중요합니다.</span></div>
+                    <div class="flex gap-3"><span class="font-black text-[#004098] w-16 shrink-0">동선</span><span>1일차 잠실 → 홍대 → 대학로 → 위례 호텔, 2일차 롯데월드 후 학교 귀가입니다.</span></div>
+                    <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4 text-amber-800">
+                        <i class="fa-solid fa-clock mr-1"></i> 서울 도심 교통 상황에 따라 이동 시간이 달라질 수 있습니다. 조장·선생님 안내에 맞춰 주세요.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="map-section" class="py-16 bg-white border-t border-slate-100">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-slate-800 font-title tracking-tight">한눈에 보는 여행 동선</h2>
+                    <p class="text-slate-500 mt-2 text-sm italic">도시 사이는 실제 도로 polyline으로 이어집니다. 버스 아이콘이 진행 방향을 향합니다.</p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-2 mb-8">
+                    <button onclick="filterMap('all')" id="btn-map-all" class="map-btn px-6 py-2 rounded-full text-sm font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all">전체 일정</button>
+                    <button onclick="filterMap('day1')" id="btn-map-day1" class="map-btn px-6 py-2 rounded-full text-sm font-bold bg-slate-800 text-white shadow-lg transition-all">1일차</button>
+                    <button onclick="filterMap('day2')" id="btn-map-day2" class="map-btn px-6 py-2 rounded-full text-sm font-bold bg-white border border-slate-200 text-slate-600 hover:bg-blue-50 transition-all">2일차</button>
+                </div>
+                <p id="map-hint" class="text-center text-xs text-slate-500 mb-4 font-medium">1일차 — 학교 출발 후 잠실·홍대·대학로·호텔</p>
+                <div class="max-w-5xl mx-auto border-8 border-slate-100 rounded-[2.5rem] shadow-xl overflow-hidden bg-white relative z-10">
+                    <div id="map"></div>
+                    <div id="map-seg-label" class="absolute top-4 left-4 z-[400] bg-white/92 backdrop-blur px-3 py-1.5 rounded-xl shadow font-bold text-xs text-slate-700 pointer-events-none">
+                        출발지 → 도착지
+                    </div>
+                </div>
+                <div class="max-w-5xl mx-auto mt-6 flex flex-wrap justify-center gap-6 text-[11px] font-bold text-slate-500">
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#f97316]"></span>1일차 전용버스</div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#3b82f6]"></span>2일차 전용버스</div>
+                    <div class="flex items-center gap-1.5"><span class="w-6 border-t-2 border-solid border-slate-400"></span>실제 도로 동선</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="schedule" class="py-16 bg-slate-50 border-t border-slate-100">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto">
+                    <div class="text-center mb-10">
+                        <h2 class="text-2xl md:text-3xl font-black font-title">세부 일정표</h2>
+                        <p class="text-slate-500 text-sm mt-2">상기 상세 일정은 학교 요청 및 현지 사정에 의해 변동될 수 있습니다. · 안내 초안</p>
+                    </div>
+
+                    <div class="bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden mb-8">
+                        <div class="bg-gradient-to-r from-[#004098] to-sky-600 text-white px-6 py-5 flex items-center justify-between flex-wrap gap-3">
+                            <div>
+                                <p class="text-xs font-bold opacity-80 uppercase tracking-widest">Day 1 · 10.28 (수)</p>
+                                <h3 class="text-xl font-black">잠실 · 홍대 · 대학로</h3>
+                            </div>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold">조 - · 중 한식 · 석 뷔페</span>
+                        </div>
+                        <div class="p-6 md:p-8 space-y-8">
+                            <div class="schedule-media">
+                                <div class="schedule-desc space-y-1">
+                                    <p class="text-xs font-black text-[#004098] tracking-widest">08:45</p>
+                                    <h4 class="font-bold text-lg text-slate-800">함백고등학교 출발</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">인원 파악 후 전용버스로 롯데월드몰(잠실)로 이동합니다.</p>
+                                </div>
+                            </div>
+                            <div class="schedule-media">
+                                <div class="schedule-desc space-y-1">
+                                    <p class="text-xs font-black text-amber-600 tracking-widest">11:30 ~ 12:30 · 중식</p>
+                                    <h4 class="font-bold text-lg text-slate-800">숙성시대 · 소고기불고기세트</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">롯데월드몰 권역에서 한식으로 점심을 든 뒤 서울스카이로 이동합니다.</p>
+                                </div>
+                            </div>
+                            <div class="schedule-media">
+                                <img src="assets/images/day1-seoulsky.jpg" alt="서울스카이에서 내려다본 잠실" class="schedule-thumb">
+                                <div class="schedule-desc space-y-1">
+                                    <p class="text-xs font-black text-sky-600 tracking-widest">13:00 ~ 14:00</p>
+                                    <h4 class="font-bold text-lg text-slate-800">서울스카이</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">롯데월드타워 전망대에서 서울 전경을 관람합니다.</p>
+                                </div>
+                            </div>
+                            <div class="schedule-media">
+                                <img src="assets/images/day1-hongdae.jpg" alt="홍대 거리" class="schedule-thumb">
+                                <div class="schedule-desc space-y-1">
+                                    <p class="text-xs font-black text-violet-600 tracking-widest">15:00 ~ 17:00</p>
+                                    <h4 class="font-bold text-lg text-slate-800">홍대 티켓투이스케이프</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">조별로 방탈출에 참여하며 협력과 문제 해결을 경험합니다. 마포구 와우산로29가길 83.</p>
+                                </div>
+                            </div>
+                            <div class="schedule-media">
+                                <div class="schedule-desc space-y-1">
+                                    <p class="text-xs font-black text-rose-600 tracking-widest">17:45 ~ 19:00 · 석식</p>
+                                    <h4 class="font-bold text-lg text-slate-800">애슐리퀸즈 대학로점</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">홍익대학교 대학로캠퍼스 교육동에서 뷔페 석식 후 공연장으로 이동합니다.</p>
+                                </div>
+                            </div>
+                            <div class="schedule-media">
+                                <img src="assets/images/day1-musical.jpg" alt="대학로 공연 거리" class="schedule-thumb">
+                                <div class="schedule-desc space-y-1">
+                                    <p class="text-xs font-black text-fuchsia-600 tracking-widest">19:30 ~ 22:15</p>
+                                    <h4 class="font-bold text-lg text-slate-800">뮤지컬 《빨래》 · NOL 유니플렉스</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">대학로12길 64, 러닝타임 165분. 공연 종료 후 호텔로 이동합니다.</p>
+                                </div>
+                            </div>
+                            <div class="schedule-media">
+                                <img src="assets/images/hotel.jpg" alt="밀리토피아 호텔 바이 마린" class="schedule-thumb">
+                                <div class="schedule-desc space-y-1">
+                                    <p class="text-xs font-black text-slate-500 tracking-widest">22:30 ~</p>
+                                    <h4 class="font-bold text-lg text-slate-800">밀리토피아 호텔 바이 마린</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">성남 위례 숙소 체크인 후 휴식합니다. 전일정 1박 숙박.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden">
+                        <div class="bg-gradient-to-r from-slate-800 to-blue-600 text-white px-6 py-5 flex items-center justify-between flex-wrap gap-3">
+                            <div>
+                                <p class="text-xs font-bold opacity-80 uppercase tracking-widest">Day 2 · 10.29 (목)</p>
+                                <h3 class="text-xl font-black">롯데월드 · 귀교</h3>
+                            </div>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold">조 호텔식 · 중 자유식 · 석 -</span>
+                        </div>
+                        <div class="p-6 md:p-8 space-y-8">
+                            <div class="schedule-media">
+                                <div class="schedule-desc space-y-1">
+                                    <p class="text-xs font-black text-[#004098] tracking-widest">08:00 ~ 09:00</p>
+                                    <h4 class="font-bold text-lg text-slate-800">기상 · 조식 · 체크아웃</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">호텔 조식 후 짐을 정리하고 09:00 숙소를 출발합니다.</p>
+                                </div>
+                            </div>
+                            <div class="schedule-media">
+                                <img src="assets/images/day2-lotteworld.jpg" alt="롯데월드 어드벤처" class="schedule-thumb">
+                                <div class="schedule-desc space-y-1">
+                                    <p class="text-xs font-black text-rose-600 tracking-widest">10:00 ~ 15:00</p>
+                                    <h4 class="font-bold text-lg text-slate-800">롯데월드 어드벤처</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">원내 자유시간입니다. 중식은 자유식이며, 조원과 함께 다니고 집결 시간을 지켜 주세요.</p>
+                                </div>
+                            </div>
+                            <div class="schedule-media">
+                                <div class="schedule-desc space-y-1">
+                                    <p class="text-xs font-black text-sky-600 tracking-widest">15:00 ~ 18:00</p>
+                                    <h4 class="font-bold text-lg text-slate-800">함백고등학교 도착 · 귀가</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">전용버스로 학교로 이동합니다. 도로 상황에 따라 도착 시각이 달라질 수 있습니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="hotel" class="py-16 bg-white border-t border-slate-100">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="text-center mb-10">
+                    <span class="text-amber-600 font-black tracking-widest text-xs uppercase">Stay Info</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mt-2 font-title">1박 숙박 안내</h2>
+                </div>
+                <div class="bg-slate-50 border border-slate-100 rounded-[2rem] overflow-hidden">
+                    <img src="assets/images/hotel.jpg" alt="밀리토피아 호텔 바이 마린" class="w-full h-72 object-cover">
+                    <div class="p-8">
+                        <p class="text-xs font-black text-amber-600 tracking-widest mb-1">성남 위례 · 도심형 호텔</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-3">밀리토피아 호텔 바이 마린</h3>
+                        <p class="text-slate-600 leading-relaxed mb-5">성남 위례신도시에 위치한 도심형 호텔로, 잠실권 이동이 편리하고 단체 숙박에 적합한 객실·조식 운영이 장점입니다.</p>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-white border border-slate-200 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-full">야간 보안 관리</span>
+                            <span class="bg-white border border-slate-200 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-full">호텔 조식</span>
+                            <span class="bg-white border border-slate-200 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-full">대형버스 주차</span>
+                            <span class="bg-white border border-slate-200 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-full">전일정 1박 숙박</span>
+                        </div>
+                        <div class="space-y-3 text-sm text-slate-600">
+                            <div class="flex items-start gap-3"><i class="fa-solid fa-location-dot text-amber-600 mt-1"></i><span>경기도 성남시 수정구 위례대로 83</span></div>
+                            <div class="flex items-start gap-3"><i class="fa-solid fa-phone text-amber-600 mt-1"></i><span>프론트 031-727-9370</span></div>
+                            <div class="flex items-start gap-3"><i class="fa-solid fa-clock text-amber-600 mt-1"></i><span>1일차 22:30 체크인 → 2일차 09:00 체크아웃·출발</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="smart-info" class="py-16 bg-slate-50 border-t border-slate-100">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="text-center mb-10">
+                    <span class="text-blue-500 font-black tracking-widest text-xs uppercase">Weather & Outfit</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mt-2 font-title">서울 주간 날씨 & 준비 가이드</h2>
+                    <p class="text-slate-500 text-sm mt-2">10월 말 서울은 일교차가 큽니다. 입고 벗기 쉬운 겉옷을 챙기세요.</p>
+                </div>
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 mb-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-slate-800">서울 현재 예보</h3>
+                        <div class="text-xs text-slate-400">Open-Meteo API</div>
+                    </div>
+                    <div id="weather-box" class="flex gap-2 overflow-x-auto weather-scroll-fade pb-2"></div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex gap-4">
+                        <div class="w-12 h-12 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-shirt"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 mb-1">얇은 겉옷</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">아침저녁 쌀쌀하고, 서울스카이·공연장 실내는 공조로 더 춥게 느껴질 수 있습니다.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex gap-4">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-shoe-prints"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 mb-1">편한 운동화</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">잠실·홍대·대학로·롯데월드를 많이 걷습니다. 슬리퍼는 피하세요.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex gap-4">
+                        <div class="w-12 h-12 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-users"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 mb-1">조별 이동</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">방탈출과 롯데월드에서는 혼자 다니지 말고 조원·선생님과 함께 이동하세요.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex gap-4">
+                        <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-battery-three-quarters"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 mb-1">보조배터리</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">집결 연락과 가이드북 확인을 위해 배터리를 여유 있게 챙기세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="check" class="py-16 bg-white border-t border-slate-100">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="text-center mb-10">
+                    <span class="text-purple-500 font-black tracking-widest text-xs uppercase">Smart Toolkit</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mt-2 font-title">스마트 체크리스트 & 메모장</h2>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <div class="bg-slate-50 rounded-3xl p-6 lg:p-8 shadow-sm border border-slate-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2"><i class="fa-solid fa-clipboard-check text-purple-500"></i> 준비물</h3>
+                            <button onclick="promptResetChecklist()" class="text-xs font-bold text-slate-400 hover:text-red-500">초기화</button>
+                        </div>
+                        <div id="checklist-container" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-yellow-50 rounded-3xl p-6 lg:p-8 shadow-sm border border-yellow-200 flex flex-col">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2 flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-yellow-600"></i> 여행 메모장</h3>
+                        <p class="text-xs text-yellow-700 mb-4">* 작성 내용은 이 기기에만 저장됩니다.</p>
+                        <textarea id="travel-memo" class="w-full flex-1 min-h-[280px] p-5 rounded-2xl border border-yellow-300 bg-white/70 focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none text-slate-700 text-sm leading-relaxed" placeholder="✔ 조 번호 / 객실 번호&#10;✔ 집결 시각 메모&#10;✔ 개인 준비물"></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-20 bg-slate-50 border-t border-slate-100">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-slate-800 font-title">🚨 비상 연락망</h2>
+                    <p class="text-sm text-slate-500 mt-2">안전하고 원활한 일정 진행을 위해 투어메이커가 함께합니다.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 flex flex-col items-center text-center group hover:bg-orange-50 transition-all">
+                        <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-5 shadow-sm">
+                            <i class="fa-solid fa-user-tie text-orange-600 text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-xl text-slate-800">현장 총괄</h4>
+                        <p class="text-sm text-slate-500 mt-1 mb-5">일정·인솔 1차 연락</p>
+                        <a href="tel:010-4249-4026" class="bg-orange-600 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-orange-700 transition">조혁 이사: 010-4249-4026</a>
+                    </div>
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 flex flex-col items-center text-center group hover:bg-sky-50 transition-all">
+                        <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-5 shadow-sm">
+                            <i class="fa-solid fa-shield-halved text-sky-600 text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-xl text-slate-800">안전 매니저</h4>
+                        <p class="text-sm text-slate-500 mt-1 mb-5">안전·비상 대응 지원</p>
+                        <a href="tel:010-9443-7881" class="bg-sky-600 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-sky-700 transition">이재명: 010-9443-7881</a>
+                    </div>
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 flex flex-col items-center text-center group hover:bg-blue-50 transition-all">
+                        <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-5 shadow-sm">
+                            <i class="fa-solid fa-hotel text-blue-600 text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-xl text-slate-800">호텔 프론트</h4>
+                        <p class="text-sm text-slate-500 mt-1 mb-5">밀리토피아 호텔 바이 마린</p>
+                        <a href="tel:031-727-9370" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-blue-700 transition">031-727-9370</a>
+                    </div>
+                </div>
+                <p class="text-center text-sm text-slate-500 mt-8">현지 가이드 · 미정</p>
+            </div>
+        </section>
+
+        <section id="esg" class="py-16 bg-emerald-50 border-t border-emerald-100">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-10">
+                    <span class="text-emerald-600 font-black tracking-widest text-xs uppercase">Safety & ESG</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mt-2 font-title">긴급 대처 · 디지털 전환</h2>
+                </div>
+                <div class="max-w-4xl mx-auto grid md:grid-cols-3 gap-4 mb-10 text-sm">
+                    <div class="bg-white rounded-2xl p-5 border border-emerald-100">
+                        <p class="font-black text-emerald-700 mb-2">1. 예방</p>
+                        <p class="text-slate-600 leading-relaxed">전세버스 안전장비 점검, 전원 탑승 시 안전벨트 착용 확인.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border border-emerald-100">
+                        <p class="font-black text-emerald-700 mb-2">2. 대응</p>
+                        <p class="text-slate-600 leading-relaxed">잠실·대학로·성남권 응급의료기관을 사전 파악. 발생 시 현장 총괄 1차 전담.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border border-emerald-100">
+                        <p class="font-black text-emerald-700 mb-2">3. 보고</p>
+                        <p class="text-slate-600 leading-relaxed">조혁 · 이재명 ↔ 학교 측 실시간 소통 및 사후 지원.</p>
+                    </div>
+                </div>
+                <div class="text-center mb-6">
+                    <p class="text-slate-500 text-sm">스마트 가이드북 도입 기대효과 <strong class="text-emerald-600">(1인당 기준이 아닌 단체 합산)</strong></p>
+                </div>
+                <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-emerald-100 text-center">
+                        <div id="esg-paper" class="text-3xl font-black text-slate-800">296장</div>
+                        <div class="text-sm font-bold text-slate-500 mt-1">종이 절감</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-emerald-100 text-center">
+                        <div id="esg-carbon" class="text-3xl font-black text-slate-800">1,406g</div>
+                        <div class="text-sm font-bold text-slate-500 mt-1">탄소 배출 감소</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-emerald-100 text-center">
+                        <div id="esg-water" class="text-3xl font-black text-slate-800">2,775L</div>
+                        <div class="text-sm font-bold text-slate-500 mt-1">물 절약</div>
+                    </div>
+                </div>
+                <div class="max-w-4xl mx-auto bg-emerald-600 text-white rounded-2xl p-6 text-center shadow-lg">
+                    <p id="esg-desc" class="text-sm md:text-base font-medium leading-relaxed">
+                        함백고등학교와 함께하는 ESG 실천. 종이 일정표 대신 스마트 가이드북을 채택하여 자원을 절감합니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer style="background-color: #f8f9fa; padding: 40px 0; text-align: center;">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col items-center justify-center mb-6">
+                    <a href="http://tourmaker.kr" target="_blank" rel="noopener" class="bg-white border border-slate-300 rounded-[1.2rem] px-8 py-4 hover:shadow-lg transition-all inline-block">
+                        <div class="flex items-center gap-4">
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHfgIX70O5k6Anuo0UgALIdaG9jSga9auHu3uyz0uEirylGPAJnjN_qQbvEGMUvPqUQf_g9FMNUHRxlDcUBf4vZ3Mpy4TnA9WxbmzWYK11gt2zuy_Irl4wctNFjcjLyPo0GPXV792o_J7L9guRMuDfeC1gy7USwywjYbECZgzcsHybuGRRAXAnO1eNmP8/s320/logo.png" alt="Tourmaker" class="h-6">
+                            <span class="text-sm font-bold text-slate-700">홈페이지 바로가기 <i class="fa-solid fa-chevron-right text-xs ml-1"></i></span>
+                        </div>
+                    </a>
+                </div>
+                <p style="font-size: 12px; color: #6c757d; line-height: 1.6; max-width: 700px; margin: 0 auto;">
+                    [System Powered by TOURMAKER] 본 스마트 가이드북은 <strong>함백고등학교 서울 1박 2일</strong> 일정 안내를 위해 제작되었습니다.
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 translate-y-20 opacity-0 bg-slate-900 text-white px-5 py-3 rounded-full text-sm font-bold shadow-xl z-[9999] transition-all duration-300 no-print">
+        <span id="toast-msg"></span>
+    </div>
+    <div id="custom-confirm" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/60 backdrop-blur-sm px-4 no-print">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center">
+            <h3 class="text-xl font-bold mb-2">초기화 확인</h3>
+            <p class="text-slate-600 text-sm mb-6">체크리스트를 초기화하시겠습니까?</p>
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">취소</button>
+                <button onclick="executeResetChecklist()" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold">초기화</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SHARE_TITLE = '함백고등학교 서울 가이드북';
+        const PRINT_FILENAME = '261028_서울_일정표';
+        const PAGE_TITLE = document.title;
+        const CHECK_KEY = 'tm_261028_seoul_checklist';
+        const MEMO_KEY = 'tm_261028_seoul_memo';
+        const CHECK_ITEMS = ['편한 운동화', '여벌 옷', '세면도구', '얇은 겉옷(가디건·바람막이)', '개인 상비약', '보조배터리', '우산', '약간의 용돈'];
+        const TOUR_START = new Date('2026-10-28T00:00:00+09:00');
+        const TOUR_END = new Date('2026-10-29T23:59:59+09:00');
+
+        window.addEventListener('beforeprint', () => { document.title = PRINT_FILENAME; });
+        window.addEventListener('afterprint', () => { document.title = PAGE_TITLE; });
+        function printSchedule() { window.print(); }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 2800);
+        }
+        function shareLink() {
+            const url = window.location.href;
+            if (navigator.share) navigator.share({ title: SHARE_TITLE, url }).catch(()=>{});
+            else navigator.clipboard.writeText(url).then(() => showToast('링크가 복사되었습니다.'));
+        }
+        function updateDday() {
+            const badge = document.getElementById('d-day-badge');
+            const now = new Date();
+            badge.classList.remove('hidden');
+            if (now < TOUR_START) {
+                const n = Math.ceil((TOUR_START - now) / 86400000);
+                badge.className = 'ml-1 bg-[#004098] text-white text-[10px] px-2.5 py-1 rounded-full font-bold';
+                badge.innerText = 'D-' + n;
+            } else if (now <= TOUR_END) {
+                const dayCount = Math.floor((now - TOUR_START) / 86400000) + 1;
+                badge.className = 'ml-1 bg-red-500 text-white text-[10px] px-2.5 py-1 rounded-full font-bold';
+                badge.innerText = '📍 ' + dayCount + '일차 진행중';
+            } else {
+                badge.className = 'ml-1 bg-slate-500 text-white text-[10px] px-2.5 py-1 rounded-full font-bold';
+                badge.innerText = '🏁 여정 종료';
+            }
+        }
+        updateDday();
+
+        function renderChecklist() {
+            const c = document.getElementById('checklist-container');
+            const saved = JSON.parse(localStorage.getItem(CHECK_KEY) || '{}');
+            c.innerHTML = CHECK_ITEMS.map((label, i) => {
+                const id = 'chk_' + i;
+                return `<label class="flex items-start gap-3 bg-white border border-slate-100 rounded-xl px-4 py-3 cursor-pointer hover:bg-purple-50"><input type="checkbox" id="${id}" ${saved[id] ? 'checked' : ''} class="w-5 h-5 mt-0.5 accent-purple-500 rounded"><span class="text-sm text-slate-700 font-medium">${label}</span></label>`;
+            }).join('');
+            c.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
+                const s = JSON.parse(localStorage.getItem(CHECK_KEY) || '{}');
+                s[cb.id] = cb.checked;
+                localStorage.setItem(CHECK_KEY, JSON.stringify(s));
+            }));
+        }
+        function promptResetChecklist() { document.getElementById('custom-confirm').classList.replace('hidden','flex'); }
+        function closeConfirmModal() { document.getElementById('custom-confirm').classList.replace('flex','hidden'); }
+        function executeResetChecklist() { localStorage.removeItem(CHECK_KEY); renderChecklist(); closeConfirmModal(); showToast('초기화되었습니다.'); }
+        renderChecklist();
+        (function(){
+            const m = document.getElementById('travel-memo');
+            m.value = localStorage.getItem(MEMO_KEY) || '';
+            m.addEventListener('input', () => localStorage.setItem(MEMO_KEY, m.value));
+        })();
+
+        function weatherIcon(wCode) {
+            if (wCode === 0) return 'fa-sun text-orange-400';
+            if (wCode <= 3) return 'fa-cloud-sun text-yellow-400';
+            if (wCode <= 67) return 'fa-cloud-rain text-blue-400';
+            if (wCode <= 77) return 'fa-snowflake text-slate-300';
+            return 'fa-cloud-showers-heavy text-blue-500';
+        }
+        async function fetchWeather() {
+            const box = document.getElementById('weather-box');
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=7');
+                const data = await res.json();
+                const days = ['일','월','화','수','목','금','토'];
+                const trip = ['2026-10-28','2026-10-29'];
+                box.innerHTML = '';
+                for (let i = 0; i < data.daily.time.length; i++) {
+                    const date = new Date(data.daily.time[i]);
+                    const isTrip = trip.includes(data.daily.time[i]);
+                    box.innerHTML += `
+                        <div class="flex flex-col items-center p-2 rounded-lg border min-w-[68px] shrink-0 shadow-sm ${isTrip ? 'bg-blue-50 border-blue-200 ring-1 ring-blue-200' : 'bg-white border-slate-100'}">
+                            ${isTrip ? '<span class="text-[8px] font-black text-blue-600 mb-0.5">여행일</span>' : '<span class="text-[8px] text-transparent mb-0.5">.</span>'}
+                            <span class="text-[9px] text-slate-400 mb-1">${date.getMonth()+1}/${date.getDate()}(${days[date.getDay()]})</span>
+                            <i class="fa-solid ${weatherIcon(data.daily.weathercode[i])} text-lg mb-1"></i>
+                            <span class="text-[10px] font-bold text-slate-700">${Math.round(data.daily.temperature_2m_min[i])}°<span class="text-slate-300 mx-0.5">/</span>${Math.round(data.daily.temperature_2m_max[i])}°</span>
+                        </div>`;
+                }
+            } catch (e) {
+                box.innerHTML = '<p class="text-xs text-red-400 p-2">날씨 정보를 불러오지 못했습니다.</p>';
+            }
+        }
+        fetchWeather();
+
+        const spots = {
+            school: { c: [37.2265, 128.7845], t: '함백고등학교', col: '#64748b', i: '🏫' },
+            mall: { c: [37.5138, 127.1043], t: '롯데월드몰 · 숙성시대', col: '#f97316', i: '🛍️' },
+            seoulsky: { c: [37.5126, 127.1025], t: '서울스카이', col: '#f97316', i: '🌆' },
+            hongdae: { c: [37.5554, 126.9236], t: '티켓투이스케이프', col: '#f97316', i: '🔐' },
+            ashley: { c: [37.5816, 127.0019], t: '애슐리퀸즈 대학로점', col: '#f97316', i: '🍽️' },
+            uniplex: { c: [37.5827, 127.0036], t: 'NOL 유니플렉스', col: '#f97316', i: '🎭' },
+            hotel: { c: [37.4768, 127.1435], t: '밀리토피아 호텔', col: '#3b82f6', i: '🏨' },
+            lotteworld: { c: [37.5111, 127.0980], t: '롯데월드 어드벤처', col: '#3b82f6', i: '🎢' }
+        };
+
+        const routes = {
+            all: {
+                maxZoom: 7,
+                zoom: ['school', 'mall', 'hotel'],
+                segs: [
+                    { from: 'school', to: 'mall', mode: 'long', color: '#f97316', label: '함백고 → 롯데월드몰' },
+                    { from: 'hotel', to: 'school', mode: 'long', color: '#3b82f6', label: '밀리토피아 → 함백고' }
+                ]
+            },
+            day1: {
+                maxZoom: 12,
+                zoom: ['mall', 'seoulsky', 'hongdae', 'ashley', 'uniplex', 'hotel'],
+                segs: [
+                    { from: 'school', to: 'mall', mode: 'long', color: '#f97316', label: '함백고 → 롯데월드몰' },
+                    { from: 'mall', to: 'hongdae', mode: 'drive', via: ['seoulsky'], color: '#f97316', label: '서울스카이 → 홍대' },
+                    { from: 'hongdae', to: 'ashley', mode: 'drive', color: '#f97316', label: '홍대 → 애슐리퀸즈' },
+                    { from: 'ashley', to: 'uniplex', mode: 'drive', color: '#f97316', label: '애슐리퀸즈 → 유니플렉스' },
+                    { from: 'uniplex', to: 'hotel', mode: 'drive', color: '#f97316', label: '유니플렉스 → 밀리토피아' }
+                ]
+            },
+            day2: {
+                maxZoom: 12,
+                zoom: ['hotel', 'lotteworld'],
+                segs: [
+                    { from: 'hotel', to: 'lotteworld', mode: 'drive', color: '#3b82f6', label: '밀리토피아 → 롯데월드' },
+                    { from: 'lotteworld', to: 'school', mode: 'long', color: '#3b82f6', label: '롯데월드 → 함백고' }
+                ]
+            }
+        };
+        const mapHints = {
+            all: '전체 일정 — 정선 함백고와 서울·위례를 잇는 전용버스 도로 동선',
+            day1: '1일차 — 학교 출발 후 잠실·홍대·대학로·호텔',
+            day2: '2일차 — 호텔 → 롯데월드 → 학교 귀가'
+        };
+
+        let mapInited = false;
+        let currentMap = null;
+        let animToken = 0;
+        let travelerMarker = null;
+        let activeLayers = [];
+        const osrmCache = {};
+        const markerStore = {};
+
+        function isMobile() { return window.innerWidth <= 768; }
+        function segDuration(mode) {
+            if (mode === 'long') return isMobile() ? 5200 : 2600;
+            return isMobile() ? 3600 : 1800;
+        }
+
+        async function roadPath(pts) {
+            const key = pts.map(p => p.join(',')).join('|');
+            if (osrmCache[key]) return osrmCache[key];
+            try {
+                const coords = pts.map(p => `${p[1]},${p[0]}`).join(';');
+                const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`);
+                const data = await res.json();
+                if (data.code === 'Ok' && data.routes && data.routes[0]) {
+                    const path = data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+                    osrmCache[key] = path;
+                    return path;
+                }
+            } catch (e) { /* fallback */ }
+            return pts;
+        }
+
+        function createIcon(color, emoji) {
+            return L.divIcon({
+                className: 'custom-icon',
+                html: `<div style="background-color:${color}; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px;">${emoji}</div>`,
+                iconSize: [36, 36], iconAnchor: [18, 18], tooltipAnchor: [0, -18]
+            });
+        }
+        function travelerIcon(emoji, deg) {
+            return L.divIcon({
+                className: 'traveler-icon',
+                html: `<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:28px;line-height:1;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4));transform:rotate(${deg}deg);">${emoji}</div>`,
+                iconSize: [44, 44], iconAnchor: [22, 22]
+            });
+        }
+        function bearingDeg(a, b) {
+            const dLng = (b.lng - a.lng) * Math.PI / 180;
+            const lat1 = a.lat * Math.PI / 180;
+            const lat2 = b.lat * Math.PI / 180;
+            const y = Math.sin(dLng) * Math.cos(lat2);
+            const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+            return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+        }
+        function headingAdjust(mode, bearing) {
+            return bearing - 90;
+        }
+        function clearTraveler() {
+            if (travelerMarker && currentMap) {
+                currentMap.removeLayer(travelerMarker);
+                travelerMarker = null;
+            }
+        }
+        function clearActive() {
+            activeLayers.forEach(l => currentMap.removeLayer(l));
+            activeLayers = [];
+            Object.values(markerStore).forEach(m => { if (currentMap.hasLayer(m)) currentMap.removeLayer(m); });
+            clearTraveler();
+        }
+        function latLngAlong(latlngs, t) {
+            if (!latlngs.length) return null;
+            if (t <= 0) return L.latLng(latlngs[0]);
+            if (t >= 1) return L.latLng(latlngs[latlngs.length - 1]);
+            let total = 0; const segs = [];
+            for (let i = 0; i < latlngs.length - 1; i++) {
+                const a = L.latLng(latlngs[i]); const b = L.latLng(latlngs[i + 1]);
+                const d = a.distanceTo(b); segs.push({ a, b, d }); total += d;
+            }
+            if (!total) return L.latLng(latlngs[0]);
+            let remain = total * t;
+            for (const s of segs) {
+                if (remain <= s.d || s.d === 0) {
+                    const r = s.d ? remain / s.d : 0;
+                    return L.latLng(s.a.lat + (s.b.lat - s.a.lat) * r, s.a.lng + (s.b.lng - s.a.lng) * r);
+                }
+                remain -= s.d;
+            }
+            return L.latLng(latlngs[latlngs.length - 1]);
+        }
+        function lookAhead(latlngs, t) {
+            const a = latLngAlong(latlngs, Math.max(0, t - 0.01));
+            const b = latLngAlong(latlngs, Math.min(1, t + 0.02));
+            return { a, b };
+        }
+        function setSegLabel(text) {
+            const el = document.getElementById('map-seg-label');
+            if (el) el.textContent = text;
+        }
+        function showPin(key) {
+            const m = markerStore[key];
+            if (m && !currentMap.hasLayer(m)) {
+                m.addTo(currentMap);
+                activeLayers.push(m);
+            }
+        }
+        function fitKeys(keys, maxZoom) {
+            const pts = keys.map(k => spots[k].c);
+            currentMap.fitBounds(L.latLngBounds(pts), { padding: [40, 40], maxZoom: maxZoom || 12, animate: true, duration: 0.6 });
+        }
+
+        async function resolvePath(seg) {
+            const from = spots[seg.from].c;
+            const to = spots[seg.to].c;
+            const pts = [from];
+            if (seg.via) seg.via.forEach(k => pts.push(spots[k].c));
+            pts.push(to);
+            return roadPath(pts);
+        }
+
+        function animatePath(layer, duration, token) {
+            return new Promise(resolve => {
+                requestAnimationFrame(() => setTimeout(() => {
+                    if (token !== animToken) { resolve(); return; }
+                    const path = layer._path;
+                    if (!path || !path.getTotalLength) { resolve(); return; }
+                    const len = path.getTotalLength();
+                    path.style.transition = 'none';
+                    path.style.strokeDasharray = `${len}`;
+                    path.style.strokeDashoffset = `${len}`;
+                    void path.getBoundingClientRect();
+                    path.style.transition = `stroke-dashoffset ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+                    path.style.strokeDashoffset = '0';
+                    setTimeout(resolve, duration + 40);
+                }, 40));
+            });
+        }
+        function animateTraveler(latlngs, duration, token, mode) {
+            return new Promise(resolve => {
+                clearTraveler();
+                const start = L.latLng(latlngs[0]);
+                const nxt = lookAhead(latlngs, 0.02);
+                const deg = headingAdjust(mode, bearingDeg(nxt.a, nxt.b));
+                travelerMarker = L.marker(start, { icon: travelerIcon('🚌', deg), zIndexOffset: 1200 }).addTo(currentMap);
+                const t0 = performance.now();
+                function frame(now) {
+                    if (token !== animToken) { clearTraveler(); resolve(); return; }
+                    const p = Math.min(1, (now - t0) / duration);
+                    const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+                    const ll = latLngAlong(latlngs, eased);
+                    const hd = lookAhead(latlngs, eased);
+                    const rot = headingAdjust(mode, bearingDeg(hd.a, hd.b));
+                    if (travelerMarker) {
+                        travelerMarker.setLatLng(ll);
+                        travelerMarker.setIcon(travelerIcon('🚌', rot));
+                    }
+                    if (p < 1) requestAnimationFrame(frame);
+                    else resolve();
+                }
+                requestAnimationFrame(frame);
+            });
+        }
+
+        async function playRouteAnimation(day, token) {
+            const cfg = routes[day];
+            for (const seg of cfg.segs) {
+                if (token !== animToken) return;
+                setSegLabel(seg.label);
+                if (seg.mode === 'long') fitKeys([seg.from, seg.to], 7);
+                else fitKeys(cfg.zoom, cfg.maxZoom);
+
+                const path = await resolvePath(seg);
+                if (token !== animToken) return;
+                const layer = L.polyline(path, {
+                    color: seg.color,
+                    weight: 5,
+                    opacity: 0.9
+                }).addTo(currentMap);
+                activeLayers.push(layer);
+                showPin(seg.from);
+                const duration = segDuration(seg.mode);
+                await Promise.all([
+                    animatePath(layer, duration, token),
+                    animateTraveler(path, duration, token, seg.mode)
+                ]);
+                showPin(seg.to);
+                if (seg.via) seg.via.forEach(showPin);
+            }
+            if (token === animToken) setTimeout(clearTraveler, 500);
+        }
+
+        window.filterMap = async function(day) {
+            if (!currentMap) return;
+            animToken += 1;
+            const token = animToken;
+            clearActive();
+            document.querySelectorAll('.map-btn').forEach(btn => {
+                btn.className = 'map-btn px-6 py-2 rounded-full text-sm font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all';
+            });
+            const active = document.getElementById('btn-map-' + day);
+            if (active) active.className = 'map-btn px-6 py-2 rounded-full text-sm font-bold bg-slate-800 text-white shadow-lg transition-all';
+            document.getElementById('map-hint').textContent = mapHints[day] || '';
+            setSegLabel('동선 준비 중…');
+
+            const cfg = routes[day];
+            const startZoom = day === 'all' ? cfg.zoom : (day === 'day1' ? ['school', 'mall'] : cfg.zoom);
+            fitKeys(startZoom, day === 'all' || day === 'day1' ? 7 : cfg.maxZoom);
+            await new Promise(r => setTimeout(r, 280));
+            if (token !== animToken) return;
+            await playRouteAnimation(day, token);
+        };
+
+        function initMap() {
+            if (mapInited || !window.L) return;
+            mapInited = true;
+            currentMap = L.map('map', { scrollWheelZoom: false });
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles © Esri',
+                maxZoom: 18
+            }).addTo(currentMap);
+            Object.keys(spots).forEach(k => {
+                const s = spots[k];
+                markerStore[k] = L.marker(s.c, { icon: createIcon(s.col, s.i) }).bindTooltip(s.t, { direction: 'top' });
+            });
+            const start = isMobile() ? 'day1' : 'all';
+            filterMap(start);
+        }
+        window.addEventListener('load', initMap);
+    </script>
+</body>
+</html>
