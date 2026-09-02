@@ -39,6 +39,7 @@ https://indadady.github.io/261028_Seoul/
 - HTML 본문에 견적/금액 정보는 포함하지 않음
 - localStorage prefix: `tm_261028_seoul_`
 - 인쇄 파일명: `261028_서울_일정표`
+- 안전망: [T-safe24](https://indadady.github.io/T-safe24/) (함백고등학교 가이드북 연락망·긴급대처에 연결)
 
 ## Deploy
 
